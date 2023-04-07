@@ -4,7 +4,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-engine = create_engine('sqlite:///banks.db')
+engine = create_engine(
+    'sqlite:///banks.db',
+    encoding = "utf-8",
+    echo=True)
 
 session = scoped_session(
     sessionmaker(
