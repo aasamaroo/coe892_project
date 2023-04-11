@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from db import db_session
-from model import BankTable
+from model import BankTable, EmployeeTable
 
 app = FastAPI()
 
@@ -28,6 +28,10 @@ async def getBranches():
 async def getBranchByID(branch_id: int):
     branch = db_session.query(BankTable). \
         filter(BankTable.branch_id == branch_id).first()
+
+    if not branch:
+        raise HTTPException(status_code=404, detail="Branch not found")
+
     return branch
 
 #POST request to create a branch with a new Branch ID
@@ -35,7 +39,9 @@ async def getBranchByID(branch_id: int):
 async def createBranch(id: int):
     bank = BankTable()
     bank.branch_id = id
-    #ADD MORE VARIABLES
+    bank.amount = 1000
+    bank.num_employees = 0
+    calculateMinCash(id)
     db_session.add(bank)
     db_session.commit()
     return {"Great Success!": True}
@@ -50,6 +56,10 @@ async def deleteBranch(branch_id: int):
     if not branch:
         raise HTTPException(status_code=404, detail="Branch not found")
 
+    #Lay off everyone working at the bank to be deleted
+    db_session.query(EmployeeTable).filter(EmployeeTable.branch_id == branch_id).delete()
+
+    #Delete the branch itself
     db_session.delete(branch)
     db_session.commit()
     return {"Great Success!": True}
@@ -61,8 +71,23 @@ async def updateBranch(branch_id: int, amount: int):
         filter(BankTable.branch_id == branch_id).first()
     if not branch:
         raise HTTPException(status_code=404, detail="Branch not found")
-    branch.amount = amount
+
+    calculateMinCash(branch.branch_id)
+
+    if amount < branch.min_cash:
+        raise HTTPException(status_code=400, detail="Amount must meet min cash requirement")
+    else:
+        branch.amount = amount
 
     db_session.commit()
 
     return {"Great Success": True}
+
+def calculateMinCash(id: int):
+    branch = db_session.query(BankTable). \
+        filter(BankTable.branch_id == id).first()
+    if not branch:
+        raise HTTPException(status_code=404, detail="Branch not found")
+    branch.min_cash = branch.num_employees * 1000
+    db_session.commit()
+    return {"Min Cash Calculated": True}

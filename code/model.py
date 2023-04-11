@@ -8,6 +8,9 @@ from db import engine
 class BankTable(Base):
     __tablename__='bank'
     branch_id = Column(Integer, primary_key=True)
+    amount = Column(Integer)
+    min_cash = Column(Integer)
+    num_employees = Column(Integer)
 
 #Create employee object based on data from employee table
 class EmployeeTable(Base):
