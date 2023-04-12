@@ -22,6 +22,8 @@ cursor.execute('''
         )
         ''')
 
+db.commit()
+cursor.close()
 # cursor.execute("INSERT INTO employee VALUES(1, 2) ")
 # cursor.execute("SELECT * FROM employee")
 # result = cursor.fetchall()
