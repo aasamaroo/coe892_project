@@ -1,4 +1,4 @@
-pysqlite
+sqlite3
 sqlalchemy
 uvicorn
 fastapi

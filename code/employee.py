@@ -31,21 +31,21 @@ async def getEmployeeByID(employee_id: int):
 
 
 #POST request to create a new employee
-@app.post("/employees")  # create a new employee
+@app.post("/employee/{id}/{employee_id}")  # create a new employee
 async def createEmployee(id: int, employee_id: int):
     employee = EmployeeTable()
-    employee.employee_id = id
     employee.employee_id = employee_id
+    employee.branch_id = id
     db_session.add(employee)
 
-    #Update Branch where employee got hired
-    branch = db_session.query(BankTable). \
-        filter(BankTable.branch_id == employee.branch_id).first()
+    # #Update Branch where employee got hired
+    # branch = db_session.query(BankTable). \
+    #     filter(BankTable.branch_id == employee.branch_id).first()
 
-    if not branch:
-        raise HTTPException(status_code=404, detail="Branch not found")
+    # if not branch:
+    #     raise HTTPException(status_code=404, detail="Branch not found")
 
-    branch.num_employees = branch.num_employees +1
+    # branch.num_employees = branch.num_employees +1
 
 
     db_session.commit()
@@ -57,19 +57,19 @@ async def createEmployee(id: int, employee_id: int):
 async def deleteEmployee(employee_id: int):
     print("employee_ID RECIEVED" + str(employee_id))
     employee = db_session.query(EmployeeTable). \
-        filter(EmployeeTable.id == employee_id).first()
+        filter(EmployeeTable.employee_id == employee_id).first()
 
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    #Update Branch where employee worked at
-    branch = db_session.query(BankTable). \
-        filter(BankTable.branch_id == employee.branch_id).first()
+    # #Update Branch where employee worked at
+    # branch = db_session.query(BankTable). \
+    #     filter(BankTable.branch_id == employee.branch_id).first()
 
-    if not branch:
-        raise HTTPException(status_code=404, detail="Branch not found")
+    # if not branch:
+    #     raise HTTPException(status_code=404, detail="Branch not found")
 
-    branch.num_employees = branch.num_employees - 1
+    # branch.num_employees = branch.num_employees - 1
 
 
     db_session.delete(employee)

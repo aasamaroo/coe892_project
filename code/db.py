@@ -18,7 +18,7 @@ cursor.execute('''
 cursor.execute('''
         CREATE TABLE IF NOT EXISTS employee(
         employee_id INTEGER PRIMARY KEY,
-        branch_id INTEGER NOT NULL UNIQUE
+        branch_id INTEGER NOT NULL
         )
         ''')
 

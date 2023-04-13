@@ -35,13 +35,13 @@ async def getBranchByID(branch_id: int):
     return branch
 
 #POST request to create a branch with a new Branch ID
-@app.post("/branches")
-async def createBranch(id: int):
+@app.post("/branches/{branch_id}/{amount}/{num_employees}")
+async def createBranch(branch_id: int, amount: int, num_employees: int):
     bank = BankTable()
-    bank.branch_id = id
-    bank.amount = 1000
-    bank.num_employees = 0
-    calculateMinCash(id)
+    bank.branch_id = branch_id
+    bank.amount = amount
+    bank.num_employees = num_employees
+    bank.min_cash = 0
     db_session.add(bank)
     db_session.commit()
     return {"Great Success!": True}
@@ -51,7 +51,7 @@ async def createBranch(id: int):
 @app.delete("/branches/{branch_id}")
 async def deleteBranch(branch_id: int):
     branch = db_session.query(BankTable). \
-        filter(BankTable.id == branch_id).first()
+        filter(BankTable.branch_id == branch_id).first()
 
     if not branch:
         raise HTTPException(status_code=404, detail="Branch not found")
